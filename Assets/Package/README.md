@@ -1,1 +1,8 @@
-# <package_name>
+# Common
+
+### Structure
+```
+├── Editor
+├── Runtime
+├── Tests
+```
