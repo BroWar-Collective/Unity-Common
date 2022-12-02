@@ -1,13 +1,13 @@
 {
-  "name": "com.browar.TODO",
-  "displayName": "TODO",
-  "version": "0.0.0",
+  "name": "com.browar.common",
+  "displayName": "Common",
+  "version": "1.0.0",
   "unity": "2018.1",
-  "description": "TODO.",
+  "description": "Collection of common/shared utility scripts.",
   "keywords": [
-    "TODO",
+    "common",
   ],
-  "category": "TODO",
+  "category": "common",
   "author": {
     "name": "BroWar Collective",
     "email": "browar.collective@gmail.com",
