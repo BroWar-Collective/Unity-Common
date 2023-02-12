@@ -14,12 +14,10 @@ namespace BroWar.Common.Patterns
         [SerializeField]
         private List<T> targets = new List<T>();
 
-
         protected virtual void Reset()
         {
             CollectAll();
         }
-
 
         public virtual void CollectAll()
         {
@@ -33,7 +31,6 @@ namespace BroWar.Common.Patterns
             EditorUtility.SetDirty(this);
 #endif
         }
-
 
         public List<T> Targets
         {
