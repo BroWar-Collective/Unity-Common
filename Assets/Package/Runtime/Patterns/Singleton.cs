@@ -9,7 +9,6 @@ namespace BroWar.Common.Patterns
 
         private static T instance;
 
-
         protected virtual void Awake()
         {
             if (!(instance is null))
@@ -38,7 +37,6 @@ namespace BroWar.Common.Patterns
                 instance = null;
             }
         }
-
 
         public static T Instance
         {

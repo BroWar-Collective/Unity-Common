@@ -79,7 +79,7 @@ namespace BroWar.Common.States
                 }
                 else
                 {
-                    Debug.LogWarning($"[Game] Cannot find state of type: {destination.Name}");
+                    Debug.LogWarning($"[States] Cannot find state of type: {destination.Name}");
                 }
             }
         }
@@ -103,7 +103,7 @@ namespace BroWar.Common.States
             var stateType = state.Type;
             if (statesByType.ContainsKey(stateType))
             {
-                Debug.LogWarning($"[Game] {stateType} is already registered.");
+                Debug.LogWarning($"[States] {stateType} is already registered.");
                 return false;
             }
 
