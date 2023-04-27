@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using Debug = UnityEngine.Debug;
+using UnityEngine;
 
 namespace BroWar.Common.Utilities
 {
@@ -33,12 +33,12 @@ namespace BroWar.Common.Utilities
         {
             if (!stopwatches.TryGetValue(label, out var stopwatch))
             {
-                Debug.LogWarning($"[Timer] Cannot find Stopwatch associated to the label:{label}.");
+                LogHandler.Log($"[Timer] Cannot find Stopwatch associated to the label:{label}.", LogType.Warning);
                 return;
             }
 
             stopwatch.Stop();
-            Debug.Log($"[Timer] {label}:{stopwatch.ElapsedTicks}t");
+            LogHandler.Log($"[Timer] {label}:{stopwatch.ElapsedTicks}t");
         }
     }
 }
