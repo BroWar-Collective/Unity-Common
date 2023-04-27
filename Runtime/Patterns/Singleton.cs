@@ -2,6 +2,10 @@
 
 namespace BroWar.Common.Patterns
 {
+    /// <summary>
+    /// Standard Unity-based implementation of the Singleton pattern. 
+    /// Suggested not to use it in the production code, can be useful for testing.
+    /// </summary>
     [DisallowMultipleComponent]
     public class Singleton<T> : MonoBehaviour where T : Singleton<T>
     {
