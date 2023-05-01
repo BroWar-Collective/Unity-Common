@@ -7,15 +7,17 @@ namespace BroWar.Common.Utilities
         public static void SafeDestroy(this Object obj)
         {
 #if UNITY_EDITOR
-            if (Application.isEditor)
-            {
-                Object.DestroyImmediate(obj);
-            }
-            else
-#endif
+            if (Application.isPlaying)
             {
                 Object.Destroy(obj);
             }
+            else
+            {
+                Object.DestroyImmediate(obj);
+            }
+#else
+            Object.Destroy(obj);
+#endif
         }
     }
 }
