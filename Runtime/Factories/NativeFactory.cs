@@ -26,14 +26,14 @@ namespace BroWar.Common.Factories
         {
             if (prefab == null)
             {
-                Debug.LogError($"[Factories] Given prefab is invalid.");
+                LogHandler.Log($"[Factories] Given prefab is invalid.", LogType.Error);
                 return;
             }
 
             var type = prefab.GetType();
             if (poolsByTypes.TryGetValue(type, out _))
             {
-                Debug.LogError($"[Factories] Prefab with type {type} is already cached.");
+                LogHandler.Log($"[Factories] Prefab with type {type} is already cached.", LogType.Error);
                 return;
             }
 
@@ -56,7 +56,7 @@ namespace BroWar.Common.Factories
                 return pool.Get();
             }
 
-            Debug.LogError($"[Factories] Cannot create instance for type - {type}.");
+            LogHandler.Log($"[Factories] Cannot create instance for type - {type}.", LogType.Error);
             return null;
         }
 
