@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using Unity.Collections;
+using UnityEngine;
 
 namespace BroWar.Common.Utilities
 {
@@ -30,6 +31,25 @@ namespace BroWar.Common.Utilities
             var listArray = (T[])typeof(List<T>).GetField("_items", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(list);
             typeof(List<T>).GetField("_size", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(list, nativeArray.Length);
             NativeArray<T>.Copy(nativeArray, listArray, nativeArray.Length);
+        }
+
+        /// <summary>
+        /// Returns random list element based on the <see cref="Random"/> API.
+        /// </summary>
+        public static T GetRandom<T>(this List<T> list)
+        {
+            var count = list.Count;
+            if (count == 0)
+            {
+                return default;
+            }
+
+            return list[Random.Range(0, count)];
+        }
+
+        public static bool IsNullOrEmpty<T>(this List<T> list)
+        {
+            return list == null || list.Count == 0;
         }
     }
 }
