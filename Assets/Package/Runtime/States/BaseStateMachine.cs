@@ -9,14 +9,20 @@ namespace BroWar.Common.States
     /// Basic state machine, contains logic for updating and switching associated states.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class BaseStateMachine<T> : IStateMachine where T : BaseState
+    public class BaseStateMachine<T> : IStateMachine where T : class, IState
     {
         private readonly Type startState;
         private readonly Dictionary<Type, T> statesByType;
 
-        public event Action<BaseState> OnStateChanged;
+        public event Action<IState> OnStateChanged;
 
-        public BaseStateMachine(IReadOnlyList<T> states, Type startState = null)
+        public BaseStateMachine(IReadOnlyList<T> states) : this(states, null)
+        { }
+
+        public BaseStateMachine(IReadOnlyList<T> states, Type startState) : this(states, startState, null)
+        { }
+
+        public BaseStateMachine(IReadOnlyList<T> states, Type startState, T ongoingState)
         {
             this.startState = startState;
             var statesCount = states != null ? states.Count : 0;
@@ -26,6 +32,42 @@ namespace BroWar.Common.States
                 var state = states[i];
                 AppendState(state);
             }
+
+            OngoingState = ongoingState;
+        }
+
+        private bool TryProgressFromState(T currentState)
+        {
+            if (!currentState.WantsToClose())
+            {
+                return false;
+            }
+
+            IReadOnlyList<Type> destinations = currentState.GetDestinations();
+            for (int i = 0; i < destinations.Count; i++)
+            {
+                Type destination = destinations[i];
+                if (destination == null)
+                {
+                    Reset();
+                    return true;
+                }
+
+                if (TryGetState(destination, out T state))
+                {
+                    if (state.WantsToBegin())
+                    {
+                        ChangeState(state);
+                        return true;
+                    }
+                }
+                else
+                {
+                    LogHandler.Log($"[States] Cannot find state of type: {destination.Name}.", LogType.Warning);
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -35,6 +77,7 @@ namespace BroWar.Common.States
         {
             if (!HasStates)
             {
+                LogHandler.Log($"[States] Cannot start {nameof(IStateMachine)}. States are not available.", LogType.Warning);
                 return;
             }
 
@@ -45,42 +88,24 @@ namespace BroWar.Common.States
         }
 
         /// <summary>
-        /// Updates <see cref="CurrentState"/> and changes to the next one if conditions are met.
+        /// Updates <see cref="CurrentState"/> and <see cref="OngoingState"/>. 
+        /// Tries to change state if conditions are met.
         /// </summary>
         public void Tick()
         {
-            if (CurrentState == null)
+            if (OngoingState != null)
             {
-                return;
-            }
-
-            CurrentState.Tick();
-            if (!CurrentState.WantsToClose())
-            {
-                return;
-            }
-
-            var destinations = CurrentState.GetDestinations();
-            for (var i = 0; i < destinations.Count; i++)
-            {
-                var destination = destinations[i];
-                if (destination == null)
+                OngoingState.Tick();
+                if (TryProgressFromState(OngoingState))
                 {
-                    Reset();
                     return;
                 }
+            }
 
-                if (TryGetState<T>(destination, out var state))
-                {
-                    if (state.WantsToBegin())
-                    {
-                        ChangeState(state);
-                    }
-                }
-                else
-                {
-                    LogHandler.Log($"[States] Cannot find state of type: {destination.Name}", LogType.Warning);
-                }
+            if (CurrentState != null)
+            {
+                CurrentState.Tick();
+                TryProgressFromState(CurrentState);
             }
         }
 
@@ -151,25 +176,26 @@ namespace BroWar.Common.States
             return statesByType.ContainsKey(stateType);
         }
 
-        public bool TryGetState<TState>(Type stateType, out TState state) where TState : T
+        public bool TryGetState<TState>(Type stateType, out TState state) where TState : class, T
         {
             state = statesByType.TryGetValue(stateType, out T s) ? s as TState : null;
             return state != null;
         }
 
-        public bool IsStateActive(BaseState state)
+        public bool IsStateActive(IState state)
         {
             return CurrentState == state;
         }
 
+        public T OngoingState { get; private set; }
         public T CurrentState { get; private set; }
 
         /// <summary>
-        /// Indicates if the state machine has cached states.
+        /// Indicates whether the state machine has cached states.
         /// </summary>
         public bool HasStates => statesByType.Count > 0;
         /// <summary>
-        /// Indicates if the state machine has an active state.
+        /// Indicates whether the state machine has an active state.
         /// </summary>
         public bool IsWorking => CurrentState != null;
 
@@ -178,7 +204,8 @@ namespace BroWar.Common.States
         /// </summary>
         public IReadOnlyCollection<T> States => statesByType.Values;
 
-        BaseState IStateMachine.CurrentState => CurrentState;
-        IReadOnlyCollection<BaseState> IStateMachine.States => States.ToList<BaseState>();
+        IState IStateMachine.OngoingState => OngoingState;
+        IState IStateMachine.CurrentState => CurrentState;
+        IReadOnlyCollection<IState> IStateMachine.States => States.ToList<IState>();
     }
 }

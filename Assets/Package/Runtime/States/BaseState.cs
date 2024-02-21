@@ -3,87 +3,71 @@ using System.Collections.Generic;
 
 namespace BroWar.Common.States
 {
-    public abstract class BaseState
+    public abstract class BaseState : IState
     {
         private readonly List<Type> destinationStates = new List<Type>();
 
-        /// <summary>
-        /// Appends new destination <see cref="BaseState"/> to the collection of possible destinations.
-        /// </summary>
-        public void AppendDestination<T>() where T : BaseState
+        /// <inheritdoc />
+        public void AppendDestination<T>() where T : IState
         {
             AppendDestination(typeof(T));
         }
 
-        /// <summary>
-        /// Appends new destination to the collection of possible destinations.
-        /// If the given <see cref="Type"/> equals to <see langword="null"/> this will be treated as a "reset" option.
-        /// </summary>
+        /// <inheritdoc />
         public void AppendDestination(Type stateType)
         {
             destinationStates.Insert(0, stateType);
         }
 
-        /// <summary>
-        /// Removes destination <see cref="BaseState"/> from the collection of possible destinations.
-        /// </summary>
-        public void RemoveDestination<T>() where T : BaseState
+        /// <inheritdoc />
+        public void RemoveDestination<T>() where T : IState
         {
             RemoveDestination(typeof(T));
         }
 
-        /// <summary>
-        /// Removes destination from the collection of possible destinations.
-        /// </summary>
+        /// <inheritdoc />
         public void RemoveDestination(Type stateType)
         {
             destinationStates.Remove(stateType);
         }
 
-        /// <summary>
-        /// Completely clears possible destination <see cref="BaseState"/>s.
-        /// </summary>
+        /// <inheritdoc />
         public void ClearDestinations()
         {
             destinationStates.Clear();
         }
 
-        /// <summary>
-        /// Returns all possible destinations from this <see cref="BaseState"/>.
-        /// </summary>
+        /// <inheritdoc />
         public IReadOnlyList<Type> GetDestinations()
         {
             return destinationStates;
         }
 
+        /// <inheritdoc />
         public virtual void BeginState()
         { }
 
+        /// <inheritdoc />
         public virtual void CloseState()
         { }
 
-        /// <summary>
-        /// Updates <see cref="BaseState"/>.
-        /// </summary>
+        /// <inheritdoc />
         public virtual void Tick()
         { }
 
-        /// <summary>
-        /// Indicates if this <see cref="BaseState"/> is ready to be safely activated and working.
-        /// </summary>
+        /// <inheritdoc />
         public virtual bool WantsToBegin()
         {
             return true;
         }
 
-        /// <summary>
-        /// Indicates if this <see cref="BaseState"/> is ready (current work is done) to be inactive.
-        /// </summary>
+        /// <inheritdoc />
         public virtual bool WantsToClose()
         {
             return true;
         }
 
+        /// <inheritdoc />
         public virtual bool Represents(Type type)
         {
             return Type == type;
@@ -94,6 +78,7 @@ namespace BroWar.Common.States
             return Type.Name;
         }
 
+        /// <inheritdoc />
         public virtual Type Type
         {
             get => GetType();
