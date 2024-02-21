@@ -36,14 +36,14 @@ namespace BroWar.Common.States
             OngoingState = ongoingState;
         }
 
-        private bool TryProgressFromState(T currentState)
+        private bool TryProgressFromState(T sourceState)
         {
-            if (!currentState.WantsToClose())
+            if (!sourceState.WantsToClose())
             {
                 return false;
             }
 
-            IReadOnlyList<Type> destinations = currentState.GetDestinations();
+            IReadOnlyList<Type> destinations = sourceState.GetDestinations();
             for (int i = 0; i < destinations.Count; i++)
             {
                 Type destination = destinations[i];
@@ -55,6 +55,11 @@ namespace BroWar.Common.States
 
                 if (TryGetState(destination, out T state))
                 {
+                    if (state == CurrentState)
+                    {
+                        continue;
+                    }
+
                     if (state.WantsToBegin())
                     {
                         ChangeState(state);
