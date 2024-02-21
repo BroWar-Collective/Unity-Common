@@ -5,14 +5,15 @@ namespace BroWar.Common.States
 {
     public interface IStateMachine
     {
-        event Action<BaseState> OnStateChanged;
+        event Action<IState> OnStateChanged;
 
         void Start();
         void Reset();
         bool ChangeState(Type nextStateType);
-        bool IsStateActive(BaseState state);
+        bool IsStateActive(IState state);
 
-        BaseState CurrentState { get; }
-        IReadOnlyCollection<BaseState> States { get; }
+        IState OngoingState { get; }
+        IState CurrentState { get; }
+        IReadOnlyCollection<IState> States { get; }
     }
 }

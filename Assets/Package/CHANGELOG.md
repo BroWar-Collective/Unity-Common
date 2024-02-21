@@ -1,3 +1,9 @@
+## 1.1.0 [21.02.2024]
+
+### Changed:
+- Fix disposing issues in the ObjectPool implementation
+- StateMachine implementation now utilizes interface (IState) instead of the BaseState class
+
 ## 1.0.2 [30.09.2023]
 
 ### Added:

@@ -4,14 +4,14 @@ using System.Collections.Generic;
 namespace BroWar.Common.Patterns
 {
     /// <summary>
-    /// ObjectPool implementation using Queue.
+    /// Pool implementation using Queue.
     /// </summary>
     public class ObjectPool<T>
     {
         protected Func<T> createObjectFunction;
         protected Action<T> onTakenFromPoolAction;
         protected Action<T> onReturnedToPoolAction;
-        protected Action<T> onDestroyedAction;
+        protected Action<T> onDestroyedInPoolAction;
 
         private readonly Queue<T> pooledObjects;
         private readonly int maxSize;
@@ -23,10 +23,10 @@ namespace BroWar.Common.Patterns
         /// <param name="createObjectFunction">Create function used for creating new instances of pooled objects.</param>
         /// <param name="onTakenFromPoolAction">Called when the instance is taken from the pool.</param>
         /// <param name="onReturnedToPoolAction">Called when the instance is returned to the pool. This can be used to clean up or disable the instance.</param>
-        /// <param name="onDestroyedAction">Called when the element could not be returned to the pool due to the pool reaching the maximum size.</param>
+        /// <param name="onDestroyedInPoolAction">Called when the element could not be returned to the pool due to the pool reaching the maximum size.</param>
         /// <param name="collectionCheck">Collection checks are performed when an instance is returned back to the pool. An exception will be thrown if the instance is already in the pool. Collection checks are only performed in the Editor.</param>
         /// <param name="maxSize">The maximum size of the pool. When the pool reaches the max size then any further instances returned to the pool will be ignored and can be garbage collected. This can be used to prevent the pool growing to a very large size. If max size is set to -1 then max size is ignored.</param>
-        public ObjectPool(Func<T> createObjectFunction, Action<T> onTakenFromPoolAction = null, Action<T> onReturnedToPoolAction = null, Action<T> onDestroyedAction = null, bool collectionCheck = false, int maxSize = -1)
+        public ObjectPool(Func<T> createObjectFunction, Action<T> onTakenFromPoolAction = null, Action<T> onReturnedToPoolAction = null, Action<T> onDestroyedInPoolAction = null, bool collectionCheck = false, int maxSize = -1)
         {
             pooledObjects = new Queue<T>();
 
@@ -36,7 +36,7 @@ namespace BroWar.Common.Patterns
             this.createObjectFunction = createObjectFunction;
             this.onTakenFromPoolAction = onTakenFromPoolAction;
             this.onReturnedToPoolAction = onReturnedToPoolAction;
-            this.onDestroyedAction = onDestroyedAction;
+            this.onDestroyedInPoolAction = onDestroyedInPoolAction;
 
             CountActive = 0;
         }
@@ -58,7 +58,7 @@ namespace BroWar.Common.Patterns
 
         protected virtual void OnDestroyedInPool(T element)
         {
-            onDestroyedAction?.Invoke(element);
+            onDestroyedInPoolAction?.Invoke(element);
         }
 
         public void FillPool(int initialPoolSize = 0)
@@ -93,7 +93,7 @@ namespace BroWar.Common.Patterns
 #if UNITY_EDITOR
             if (collectionCheck && pooledObjects.Contains(element))
             {
-                throw new Exception($"[ObjectPool] Item {element} cannot be returned to the pool as it already exists in the pool!");
+                throw new Exception($"[Common] Item {element} cannot be returned to the pool as it already exists in the pool!");
             }
 #endif
 
@@ -115,10 +115,11 @@ namespace BroWar.Common.Patterns
         /// </summary>
         public void Clear()
         {
-            for (var i = pooledObjects.Count; i > 0; i++)
+            var count = pooledObjects.Count;
+            for (var i = 0; i < count; i++)
             {
                 var element = pooledObjects.Dequeue();
-                onDestroyedAction(element);
+                onDestroyedInPoolAction?.Invoke(element);
             }
 
             CountActive = 0;
@@ -129,18 +130,17 @@ namespace BroWar.Common.Patterns
         /// </summary>
         public int CountActive
         {
-            get;
-            private set;
+            get; private set;
         }
 
         /// <summary>
         /// Number of objects that are currently available in the pool.
         /// </summary>
-        public int CountInactive => pooledObjects.Count;
+        public int CountPooled => pooledObjects.Count;
 
         /// <summary>
-        /// The total number of active and inactive objects.
+        /// The total number of active and inactive (pooled) objects.
         /// </summary>
-        public int CountAll => CountActive + CountInactive;
+        public int CountAll => CountActive + CountPooled;
     }
 }
