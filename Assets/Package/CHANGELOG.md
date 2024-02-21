@@ -1,4 +1,12 @@
-## 1.1.0 [21.02.2024]
+## 1.1.1 [21.02.2024]
+
+### Changed:
+Fix attempts to re-enter current state
+
+## 1.1.0 [20.02.2024]
+
+### Added:
+- 'Any' state feature for the State Machine implementation
 
 ### Changed:
 - Fix disposing issues in the ObjectPool implementation
