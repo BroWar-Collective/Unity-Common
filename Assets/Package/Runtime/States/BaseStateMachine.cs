@@ -36,7 +36,7 @@ namespace BroWar.Common.States
             OngoingState = ongoingState;
         }
 
-        private bool TryProgressFromState(T sourceState)
+        protected virtual bool TryProgressFromState(T sourceState)
         {
             if (!sourceState.WantsToClose())
             {
@@ -75,9 +75,17 @@ namespace BroWar.Common.States
             return false;
         }
 
-        /// <summary>
-        /// Begins new state using the first one in the cached collection or already declared starting state.
-        /// </summary>
+        protected virtual T GetStartState()
+        {
+            if (startState != null && statesByType.TryGetValue(startState, out T state))
+            {
+                return state;
+            }
+
+            return statesByType.FirstOrDefault(state => state.Value.WantsToBegin()).Value;
+        }
+
+        /// <inheritdoc />
         public void Start()
         {
             if (!HasStates)
@@ -86,16 +94,17 @@ namespace BroWar.Common.States
                 return;
             }
 
-            var state = startState == null
-                ? statesByType.First().Value
-                : statesByType[startState];
+            var state = GetStartState();
+            if (state == null)
+            {
+                LogHandler.Log($"[States] Cannot start {nameof(IStateMachine)}. Cannot find valid state.", LogType.Warning);
+                return;
+            }
+
             ChangeState(state);
         }
 
-        /// <summary>
-        /// Updates <see cref="CurrentState"/> and <see cref="OngoingState"/>. 
-        /// Tries to change state if conditions are met.
-        /// </summary>
+        /// <inheritdoc />
         public void Tick()
         {
             if (OngoingState != null)
@@ -114,9 +123,7 @@ namespace BroWar.Common.States
             }
         }
 
-        /// <summary>
-        /// Closes <see cref="CurrentState"/>.
-        /// </summary>
+        /// <inheritdoc />
         public void Reset()
         {
             CurrentState?.CloseState();
@@ -192,9 +199,6 @@ namespace BroWar.Common.States
             return CurrentState == state;
         }
 
-        public T OngoingState { get; private set; }
-        public T CurrentState { get; private set; }
-
         /// <summary>
         /// Indicates whether the state machine has cached states.
         /// </summary>
@@ -204,9 +208,11 @@ namespace BroWar.Common.States
         /// </summary>
         public bool IsWorking => CurrentState != null;
 
-        /// <summary>
-        /// All states applied to the state machine.
-        /// </summary>
+        /// <inheritdoc cref="IStateMachine.OngoingState"/>
+        public T OngoingState { get; set; }
+        /// <inheritdoc cref="IStateMachine.CurrentState"/>
+        public T CurrentState { get; private set; }
+        /// <inheritdoc cref="IStateMachine.States"/>
         public IReadOnlyCollection<T> States => statesByType.Values;
 
         IState IStateMachine.OngoingState => OngoingState;
