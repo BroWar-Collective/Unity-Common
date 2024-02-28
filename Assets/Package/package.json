@@ -1,7 +1,7 @@
 {
   "name": "com.browar.common",
   "displayName": "Common",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "unity": "2018.1",
   "description": "Collection of common/shared utility scripts.",
   "keywords": [

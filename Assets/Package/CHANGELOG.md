@@ -1,7 +1,15 @@
+## 1.1.2 [29.02.2024]
+
+### Added:
+- Possibility to override OngoingState property in the BaseStateMachine class
+
+### Changed:
+- Fix searching for starting state in the State Machine
+
 ## 1.1.1 [21.02.2024]
 
 ### Changed:
-Fix attempts to re-enter current state
+- Fix attempts to re-enter current state
 
 ## 1.1.0 [20.02.2024]
 
