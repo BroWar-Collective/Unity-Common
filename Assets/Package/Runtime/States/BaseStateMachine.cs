@@ -8,7 +8,6 @@ namespace BroWar.Common.States
     /// <summary>
     /// Basic state machine, contains logic for updating and switching associated states.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     public class BaseStateMachine<T> : IStateMachine where T : class, IState
     {
         private readonly Type startState;
@@ -173,6 +172,7 @@ namespace BroWar.Common.States
         {
             if (!statesByType.TryGetValue(nextStateType, out var nextState))
             {
+                LogHandler.Log($"[States] Cannot change State to: {nextStateType}. Associated instance not found.", LogType.Warning);
                 return false;
             }
 
