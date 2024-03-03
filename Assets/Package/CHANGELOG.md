@@ -1,3 +1,9 @@
+## 1.1.2 [03.03.2024]
+
+### Added:
+- Possibility to dispose States and StateMachines
+- Shuffle extension method for Lists
+
 ## 1.1.2 [29.02.2024]
 
 ### Added:
