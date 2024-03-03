@@ -125,7 +125,17 @@ namespace BroWar.Common.States
         /// <inheritdoc />
         public void Reset()
         {
-            CurrentState?.CloseState();
+            Reset(true);
+        }
+
+        /// <inheritdoc />
+        public void Reset(bool closeState)
+        {
+            if (closeState)
+            {
+                CurrentState?.CloseState();
+            }
+
             CurrentState = null;
         }
 
@@ -194,29 +204,43 @@ namespace BroWar.Common.States
             return state != null;
         }
 
+        /// <inheritdoc />
         public bool IsStateActive(IState state)
         {
             return CurrentState == state;
         }
 
-        /// <summary>
-        /// Indicates whether the state machine has cached states.
-        /// </summary>
-        public bool HasStates => statesByType.Count > 0;
-        /// <summary>
-        /// Indicates whether the state machine has an active state.
-        /// </summary>
-        public bool IsWorking => CurrentState != null;
+        public virtual void Dispose()
+        {
+            Reset(false);
+            foreach (var state in States)
+            {
+                state.Dispose();
+            }
+        }
+
+        /// <inheritdoc />
+        IState IStateMachine.OngoingState => OngoingState;
+
+        /// <inheritdoc />
+        IState IStateMachine.CurrentState => CurrentState;
+
+        /// <inheritdoc />
+        IReadOnlyCollection<IState> IStateMachine.States => States.ToList<IState>();
 
         /// <inheritdoc cref="IStateMachine.OngoingState"/>
         public T OngoingState { get; set; }
+
         /// <inheritdoc cref="IStateMachine.CurrentState"/>
-        public T CurrentState { get; private set; }
+        public T CurrentState { get; protected set; }
+
         /// <inheritdoc cref="IStateMachine.States"/>
         public IReadOnlyCollection<T> States => statesByType.Values;
 
-        IState IStateMachine.OngoingState => OngoingState;
-        IState IStateMachine.CurrentState => CurrentState;
-        IReadOnlyCollection<IState> IStateMachine.States => States.ToList<IState>();
+        /// <inheritdoc />
+        public bool HasStates => statesByType.Count > 0;
+
+        /// <inheritdoc />
+        public bool IsWorking => CurrentState != null;
     }
 }
