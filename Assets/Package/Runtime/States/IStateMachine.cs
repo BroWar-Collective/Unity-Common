@@ -39,6 +39,7 @@ namespace BroWar.Common.States
         IState CurrentState { get; }
         /// <summary>
         /// All states added to the State Machine.
+        /// Doesn't include <see cref="OngoingState"/>.
         /// </summary>
         IReadOnlyCollection<IState> States { get; }
         /// <summary>
