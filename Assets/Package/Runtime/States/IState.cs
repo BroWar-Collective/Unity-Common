@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BroWar.Common.States
 {
-    public interface IState
+    public interface IState : IDisposable
     {
         /// <summary>
         /// Appends new destination <see cref="IState"/> to the collection of possible destinations.

@@ -73,6 +73,11 @@ namespace BroWar.Common.States
             return Type == type;
         }
 
+        public virtual void Dispose()
+        {
+            ClearDestinations();
+        }
+
         public override string ToString()
         {
             return Type.Name;

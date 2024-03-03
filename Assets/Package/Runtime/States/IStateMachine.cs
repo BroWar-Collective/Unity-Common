@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BroWar.Common.States
 {
-    public interface IStateMachine
+    public interface IStateMachine : IDisposable
     {
         /// <summary>
         /// Fired each time <see cref="CurrentState"/> is changed.
@@ -18,6 +18,8 @@ namespace BroWar.Common.States
         /// Closes <see cref="CurrentState"/> if available and resets State Machine.
         /// </summary>
         void Reset();
+        /// <inheritdoc cref="Reset" />
+        void Reset(bool closeState);
         /// <summary>
         /// Updates <see cref="CurrentState"/> and <see cref="OngoingState"/>. 
         /// Tries to change state if conditions are met.
@@ -39,5 +41,13 @@ namespace BroWar.Common.States
         /// All states added to the State Machine.
         /// </summary>
         IReadOnlyCollection<IState> States { get; }
+        /// <summary>
+        /// Indicates whether the state machine has cached states.
+        /// </summary>
+        public bool HasStates { get; }
+        /// <summary>
+        /// Indicates whether the state machine has an active state.
+        /// </summary>
+        public bool IsWorking { get; }
     }
 }
