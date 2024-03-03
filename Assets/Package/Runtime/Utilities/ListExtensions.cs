@@ -36,7 +36,7 @@ namespace BroWar.Common.Utilities
         /// <summary>
         /// Returns random list element based on the <see cref="Random"/> API.
         /// </summary>
-        public static T GetRandom<T>(this List<T> list)
+        public static T GetRandom<T>(this IList<T> list)
         {
             var count = list.Count;
             if (count == 0)
@@ -47,9 +47,22 @@ namespace BroWar.Common.Utilities
             return list[Random.Range(0, count)];
         }
 
-        public static bool IsNullOrEmpty<T>(this List<T> list)
+        public static bool IsNullOrEmpty<T>(this IList<T> list)
         {
             return list == null || list.Count == 0;
+        }
+
+        public static void Shuffle<T>(this IList<T> list)
+        {
+            var count = list.Count;
+            var last = count - 1;
+            for (var i = 0; i < last; ++i)
+            {
+                var r = Random.Range(i, count);
+                var tmp = list[i];
+                list[i] = list[r];
+                list[r] = tmp;
+            }
         }
     }
 }
