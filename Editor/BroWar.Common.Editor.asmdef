@@ -1,0 +1,16 @@
+{
+    "name": "BroWar.Common.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:173c5b3ae199f7948aa8473aac4ba00d"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
